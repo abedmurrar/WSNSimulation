@@ -1,14 +1,12 @@
 classdef Node
     properties
-        id;
         energy;
         x;
         y;
         z;
     end
     methods
-        function obj = Node(id, energy, x, y, z)
-            obj.id = id;
+        function obj = Node(energy, x, y, z)
             obj.energy = energy;
             obj.x = x;
             obj.y = y;
