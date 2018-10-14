@@ -1,8 +1,8 @@
-img = imread('map2.jpg');
+img = imread('map.jpg');
 format longEng
 %assuming 1 AA baterries on each node
 nodes = [Node(1200,-0.23,0.3345,0),...
-    Node(0.5,0.0944,0.7074,0),...
+    Node(1200,0.0944,0.7074,0),...
     Node(1200,0.2712,-0.1497,0),...
     Node(1200,0.7797,0.1155,0),...
     Node(1200,1.245,1.027,0),...
@@ -19,7 +19,7 @@ nodes = [Node(1200,-0.23,0.3345,0),...
     Node(1200,0.8475,0.4885,0),...
     Node(1200,0.477,1.332,0),...
     Node(1200,1.385,0.3755,0),...
-    Node(1200,-0.6271,0.4012,0)...
+    Node(inf,-0.6271,0.4012,0)...       % base station has infinite energy
     ];
 
 n = Network(nodes, 10e-12, 0.0013e-12, 50e-9);
@@ -48,15 +48,24 @@ pause(1)
     
     
 lifetime = 0;
+simulationDone = 0;
 
-while (n.nodes(1).energy > 0 && n.nodes(2).energy > 0 && n.nodes(3).energy > 0)
+while simulationDone == 0
     % Sending and Recieving operations to be done in each cycle %
     
     % ------ Algorithm Begin ------ %
-    n = DirectTransmission(n);
+    n = BCDCP(n, 3, 2048);
     % ------ Algorithm End   ------ %
     
     lifetime = lifetime + 1;
+    
+    
+    % check if any node is dead %
+    for i = 1:19
+       if n.nodes(i).energy <= 0
+          simulationDone = 1;
+       end
+    end
 end
 
 format
