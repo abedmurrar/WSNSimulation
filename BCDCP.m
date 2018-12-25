@@ -1,6 +1,8 @@
 % an assumption is made that the initial energies of the nodes are none and
 % that at each transmission stage the energies are also sent, so there is
 % no need to send the energies in seperate messages
+%Network Lifetime: 
+%     3,371,852
 
 function n2 = BCDCP( n, numOfClusters, msgSize)
     % find the average of all energies of the nodes %
@@ -41,15 +43,35 @@ function n2 = BCDCP( n, numOfClusters, msgSize)
     end
     
     
-    % Assume direct transmission to base station from clusterheads for now
+    % Send data from clusters to cluster head
+    ClusterHeads = [];
     for i=1:length(Clusters)
         F = Clusters{i};
         for j=2:length(F)
             n = n.sendMessage(F(j),F(1), msgSize);
         end
-        n = n.sendMessage(F(1), 19, msgSize);
+        ClusterHeads = [ClusterHeads,F(1)];
     end
+    ClusterHeads = [ClusterHeads, 19];
     
+    
+    % Use graph algorithms to send data to basestation from clusterheads
+    A = zeros(numOfClusters+1);
+    for i = 1:numOfClusters+1
+        for j = 1:numOfClusters+1
+            A(i,j) = sqrt((n.nodes(ClusterHeads(i)).x-n.nodes(ClusterHeads(j)).x)^2 + (n.nodes(ClusterHeads(i)).y-n.nodes(ClusterHeads(j)).y)^2 + (n.nodes(ClusterHeads(i)).z-n.nodes(ClusterHeads(j)).z)^2) * 154;
+        end
+    end
+    G = graph(A);
+    
+    
+    % find shortestpath and send data
+    for i=1:length(ClusterHeads)-1
+        SP = shortestpath(G,i,length(ClusterHeads));
+        for j=1:length(SP)-1
+            n = n.sendMessage(ClusterHeads(j),ClusterHeads(j+1),msgSize);
+        end
+    end
     
     n2 = n;
 end
