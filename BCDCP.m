@@ -90,6 +90,7 @@ function [S1, S2] = create2Clusters(n, S)
             end
         end
     end
+    
     % make cluster heads the first entry
     S1 = maxNodes(1);
     S2 = maxNodes(2);
@@ -107,5 +108,44 @@ function [S1, S2] = create2Clusters(n, S)
            S2 = [S2 i];
        end
     end
+    
+    % Balancing clusters
+    % Determine larger cluster, let S1 be the largest
+    temp = [];
+    if length(S1) < length(S2)
+        temp = S2;
+        S2 = S1;
+        S1 = temp;
+    end
+    len_diff = length(S1) - length(S2);
+    
+    if (len_diff < 2)
+        return
+    end
+    
+    % make an array of distances to S2 max nodes
+    A = zeros(length(S1),1);
+    j = 1;
+    for i = S1
+       A(j) = sqrt((n.nodes(i).x-n.nodes(maxNodes(2)).x)^2 + (n.nodes(i).y-n.nodes(maxNodes(2)).y)^2 + (n.nodes(i).z-n.nodes(maxNodes(2)).z)^2) * 154; 
+       j = j + 1;
+    end
+    
+    
+    % create a sorted copy of the distance array
+    Ac = A;
+    Ac = sort(Ac);
+    
+    % add minimum k distances to S2
+    minLen = Ac(1:int8(floor(len_diff/2)));
+    for i=1:length(minLen)
+        k = find(A==minLen(i));
+        S2 = [S2 S1(k)];
+        S1(k) = -1;
+    end
+    
+    %remove marked elements in S1
+    S1(S1==-1)=[];
+
 end
 

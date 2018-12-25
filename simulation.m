@@ -57,7 +57,7 @@ while simulationDone == 0
     
     % ------ Algorithm Begin ------ %
     %n = DirectTransmission(n,2048);
-    n = BCDCP(n, 1,2048);
+    n = BCDCP(n, 3,2048);
     % ------ Algorithm End   ------ %
     
     lifetime = lifetime + 1;
