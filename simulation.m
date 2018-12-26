@@ -24,7 +24,7 @@ nodes = [Node(initE,-0.23,0.3345,0),...
     Node(inf,-0.6271,0.4012,0)...       % base station has infinite energy
     ];
 
-n = Network(nodes, 10e-12, 0.0013e-12, 50e-9);
+n = Network(nodes, 10e-12, 0.0013e-12, 1.65e-5);
 
 X = [];
 Y = [];
@@ -56,8 +56,9 @@ while simulationDone == 0
     % Sending and Recieving operations to be done in each cycle %
     
     % ------ Algorithm Begin ------ %
-    %n = DirectTransmission(n,2048);
-    n = BCDCP(n, 3,2048);
+    n = StaticRouting(n,20*8);
+    %n = DirectTransmission(n,20*8);
+    %n = BCDCP(n, 3, 20*8);
     % ------ Algorithm End   ------ %
     
     lifetime = lifetime + 1;
